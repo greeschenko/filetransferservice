@@ -1,15 +1,13 @@
 FROM golang:1.18-alpine
 WORKDIR /app
-COPY . .
+#COPY . .
+#COPY /home/olex/prodev/php/yii2/polonex.ga/web/img /app/tmp
+#ADD –-from=pubweb . /web
 
-ENV MYSQLUSER $MYSQLUSER
-ENV MYSQLPASS $MYSQLPASS
-ENV MYSQLDOMEN $MYSQLDOMEN
-ENV MYSQLDBNAME $MYSQLDBNAME
+#RUN go mod download
+#RUN go mod verify
+RUN ls -lahS
 
-RUN go mod download
-RUN go mod verify
+#RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o main .
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o main .
-
-CMD ["./main"]
+#CMD ["./main"]

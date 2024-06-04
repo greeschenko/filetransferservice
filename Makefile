@@ -1,7 +1,7 @@
 #Makefile
 
 build:
-	docker build . -t filetransferservice
+	docker build -t filetransferservice .
 
 run:
 	@docker run -d\
@@ -12,6 +12,7 @@ run:
         -e MYSQLPASS=${MYSQLPASS}\
         -e MYSQLDOMEN=${MYSQLDOMEN}\
         -e MYSQLDBNAME=${MYSQLDBNAME}\
+        -e POLONEXPUBPATH=${POLONEXPUBPATH}\
         -t filetransferservice
 
 stop:
