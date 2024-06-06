@@ -3,18 +3,18 @@ package main
 //TODO
 // + change all data to correct in db and reapload all files and repeat tests
 // + copy file to new path with os
-// - change record in file table
-// - add threads
+// + add threads
 // - test without copeing on prod
 // - change copy to move
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
 	"os/exec"
-    "bytes"
+	"strings"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -49,17 +49,17 @@ func (User) TableName() string {
 }
 
 func DoOsExec(com string, args ...string) {
-    cmd := exec.Command(com, args...)
-    var out bytes.Buffer
-    var stderr bytes.Buffer
-    cmd.Stdout = &out
-    cmd.Stderr = &stderr
-    err := cmd.Run()
-    if err != nil {
-        fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
-        return
-    }
-    fmt.Println("Result: " + out.String())
+	cmd := exec.Command(com, args...)
+	var out bytes.Buffer
+	var stderr bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &stderr
+	err := cmd.Run()
+	if err != nil {
+		fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
+		return
+	}
+	fmt.Println("Result: " + out.String())
 }
 
 func (u User) HandleAll() {
@@ -98,18 +98,20 @@ func (u User) HandleAll() {
 				fmt.Println("user handle start", u.ID, u.Email)
 				fmt.Println(">>>", e, grouplist[e])
 				for m := range files {
-					fmt.Println(">>>>>>", files[m].Path, files[m].Name, files[m].Ext)
-					fmt.Println("mkdir", "--parrents", "web/uploads2/"+grouplist[e])
-					fmt.Println("cp", "web"+files[m].Path+files[m].Name+"_big_."+files[m].Ext, "web/uploads2/"+grouplist[e]+"/")
+					newpath := strings.Replace(files[m].Path, "/uploads/", "/uploads2/", -1)
+					//fmt.Println(">>>>>>", files[m].Path, files[m].Name, files[m].Ext)
+					//fmt.Println("mkdir", "--parrents", "web/uploads2/"+grouplist[e])
+					fmt.Println(">>>>>>", "mv", "web"+files[m].Path+files[m].Name+"."+files[m].Ext, "web"+newpath)
 
-                    DoOsExec("mkdir", "-p", "web/uploads2/"+grouplist[e])
-
-                    if files[m].Type == 1 {
-                        DoOsExec("cp", "web"+files[m].Path+files[m].Name+"_big_."+files[m].Ext, "web/uploads2/"+grouplist[e]+"/")
-                        DoOsExec("cp", "web"+files[m].Path+files[m].Name+"_tumb_."+files[m].Ext, "web/uploads2/"+grouplist[e]+"/")
-                    }else{
-                        DoOsExec("cp", "web"+files[m].Path+files[m].Name+"."+files[m].Ext, "web/uploads2/"+grouplist[e]+"/")
-                    }
+					//TODO turn on after testing
+					//					DoOsExec("mkdir", "-p", "web"+newpath)
+					//
+					//					if files[m].Type == 1 {
+					//						DoOsExec("mv", "web"+files[m].Path+files[m].Name+"_big_."+files[m].Ext, "web"+newpath)
+					//						DoOsExec("mv", "web"+files[m].Path+files[m].Name+"_tumb_."+files[m].Ext, "web"+newpath)
+					//					} else {
+					//						DoOsExec("mv", "web"+files[m].Path+files[m].Name+"."+files[m].Ext, "web"+newpath)
+					//					}
 				}
 			}
 		}
@@ -129,7 +131,7 @@ type File struct {
 	Path   string `json:"path"`
 	Ext    string `json:"ext"`
 	UserID string `json:"user_id"`
-	Type   int `json:"type"`
+	Type   int    `json:"type"`
 }
 
 func Start(w http.ResponseWriter, r *http.Request) {
@@ -137,8 +139,6 @@ func Start(w http.ResponseWriter, r *http.Request) {
 		data struct {
 			Count int64
 			Users []User
-			//Attachments []Attachment
-			//Files       []File
 		}
 	)
 
@@ -155,8 +155,13 @@ func Start(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error get list of users: ", err)
 	}
 
+	limiter := make(chan int, 2)
 	for e := range data.Users {
-		data.Users[e].HandleAll()
+		limiter <- 1
+		go func(e int) {
+			data.Users[e].HandleAll()
+			<-limiter
+		}(e)
 	}
 
 	res, err := json.MarshalIndent(data, " ", " ")
