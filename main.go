@@ -1,14 +1,12 @@
 package main
 
 //TODO
-// + get user list
-// + check user list docs records if not empty handle it
-// + doc record code handle:
-//   + find attachment
-//   + find file and gen path
-// - copy file to new path with os
+// + change all data to correct in db and reapload all files and repeat tests
+// + copy file to new path with os
 // - change record in file table
-// + try connect volume with files
+// - add threads
+// - test without copeing on prod
+// - change copy to move
 
 import (
 	"encoding/json"
@@ -16,6 +14,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+    "bytes"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -47,6 +46,20 @@ type User struct {
 
 func (User) TableName() string {
 	return "user"
+}
+
+func DoOsExec(com string, args ...string) {
+    cmd := exec.Command(com, args...)
+    var out bytes.Buffer
+    var stderr bytes.Buffer
+    cmd.Stdout = &out
+    cmd.Stderr = &stderr
+    err := cmd.Run()
+    if err != nil {
+        fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
+        return
+    }
+    fmt.Println("Result: " + out.String())
 }
 
 func (u User) HandleAll() {
@@ -87,22 +100,16 @@ func (u User) HandleAll() {
 				for m := range files {
 					fmt.Println(">>>>>>", files[m].Path, files[m].Name, files[m].Ext)
 					fmt.Println("mkdir", "--parrents", "web/uploads2/"+grouplist[e])
-					fmt.Println("cp", "web"+files[m].Path+files[m].Name+"."+files[m].Ext, "web/uploads2/"+grouplist[e]+"/")
+					fmt.Println("cp", "web"+files[m].Path+files[m].Name+"_big_."+files[m].Ext, "web/uploads2/"+grouplist[e]+"/")
 
-					cmd1 := exec.Command("mkdir", "-p", "web/uploads2/"+grouplist[e])
-					output1, err := cmd1.Output()
-					if err != nil {
-						panic(err)
-					}
-					fmt.Println("COMMAND1", string(output1))
+                    DoOsExec("mkdir", "-p", "web/uploads2/"+grouplist[e])
 
-                    //TODO not work need test
-					cmd2 := exec.Command("cp", "web"+files[m].Path+files[m].Name+"."+files[m].Ext, "web/uploads2/"+grouplist[e]+"/")
-					output2, err := cmd2.Output()
-					if err != nil {
-						panic(err)
-					}
-					fmt.Println("COMMAND2", string(output2))
+                    if files[m].Type == 1 {
+                        DoOsExec("cp", "web"+files[m].Path+files[m].Name+"_big_."+files[m].Ext, "web/uploads2/"+grouplist[e]+"/")
+                        DoOsExec("cp", "web"+files[m].Path+files[m].Name+"_tumb_."+files[m].Ext, "web/uploads2/"+grouplist[e]+"/")
+                    }else{
+                        DoOsExec("cp", "web"+files[m].Path+files[m].Name+"."+files[m].Ext, "web/uploads2/"+grouplist[e]+"/")
+                    }
 				}
 			}
 		}
@@ -122,7 +129,7 @@ type File struct {
 	Path   string `json:"path"`
 	Ext    string `json:"ext"`
 	UserID string `json:"user_id"`
-	Type   string `json:"type"`
+	Type   int `json:"type"`
 }
 
 func Start(w http.ResponseWriter, r *http.Request) {
