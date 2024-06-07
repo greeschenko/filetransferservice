@@ -155,7 +155,7 @@ func Start(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error get list of users: ", err)
 	}
 
-	limiter := make(chan int, 10)
+	limiter := make(chan int, 25)
 	for e := range data.Users {
 		limiter <- 1
 		go func(e int) {
