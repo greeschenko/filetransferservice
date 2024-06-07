@@ -101,16 +101,16 @@ func (u User) HandleAll() {
 					newpath := strings.Replace(files[m].Path, "/uploads/", "/uploads2/", -1)
 					//fmt.Println(">>>>>>", files[m].Path, files[m].Name, files[m].Ext)
 					//fmt.Println("mkdir", "--parrents", "web/uploads2/"+grouplist[e])
-					fmt.Println(">>>>>>", "mv", "web"+files[m].Path+files[m].Name+"."+files[m].Ext, "web"+newpath)
+					fmt.Println(">>>>>>", "mv", os.Getenv("POLONEXPUBPATH")+files[m].Path+files[m].Name+"."+files[m].Ext, os.Getenv("POLONEXPUBPATH")+newpath)
 
 					//TODO turn on after testing
-					//					DoOsExec("mkdir", "-p", "web"+newpath)
+					//					DoOsExec("mkdir", "-p", os.Getenv("POLONEXPUBPATH")+newpath)
 					//
 					//					if files[m].Type == 1 {
-					//						DoOsExec("mv", "web"+files[m].Path+files[m].Name+"_big_."+files[m].Ext, "web"+newpath)
-					//						DoOsExec("mv", "web"+files[m].Path+files[m].Name+"_tumb_."+files[m].Ext, "web"+newpath)
+					//						DoOsExec("mv", os.Getenv("POLONEXPUBPATH")+files[m].Path+files[m].Name+"_big_."+files[m].Ext, os.Getenv("POLONEXPUBPATH")+newpath)
+					//						DoOsExec("mv", os.Getenv("POLONEXPUBPATH")+files[m].Path+files[m].Name+"_tumb_."+files[m].Ext, os.Getenv("POLONEXPUBPATH")+newpath)
 					//					} else {
-					//						DoOsExec("mv", "web"+files[m].Path+files[m].Name+"."+files[m].Ext, "web"+newpath)
+					//						DoOsExec("mv", os.Getenv("POLONEXPUBPATH")+files[m].Path+files[m].Name+"."+files[m].Ext, os.Getenv("POLONEXPUBPATH")+newpath)
 					//					}
 				}
 			}
