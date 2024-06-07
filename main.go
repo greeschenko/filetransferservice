@@ -104,14 +104,14 @@ func (u User) HandleAll() {
 					fmt.Println(">>>>>>", "mv", os.Getenv("POLONEXPUBPATH")+files[m].Path+files[m].Name+"."+files[m].Ext, os.Getenv("POLONEXPUBPATH")+newpath)
 
 					//TODO turn on after testing
-					//					DoOsExec("mkdir", "-p", os.Getenv("POLONEXPUBPATH")+newpath)
-					//
-					//					if files[m].Type == 1 {
-					//						DoOsExec("mv", os.Getenv("POLONEXPUBPATH")+files[m].Path+files[m].Name+"_big_."+files[m].Ext, os.Getenv("POLONEXPUBPATH")+newpath)
-					//						DoOsExec("mv", os.Getenv("POLONEXPUBPATH")+files[m].Path+files[m].Name+"_tumb_."+files[m].Ext, os.Getenv("POLONEXPUBPATH")+newpath)
-					//					} else {
-					//						DoOsExec("mv", os.Getenv("POLONEXPUBPATH")+files[m].Path+files[m].Name+"."+files[m].Ext, os.Getenv("POLONEXPUBPATH")+newpath)
-					//					}
+                    //					DoOsExec("mkdir", "-p", os.Getenv("POLONEXPUBPATH")+newpath)
+                    //
+                    //					if files[m].Type == 1 {
+                    //						DoOsExec("mv", os.Getenv("POLONEXPUBPATH")+files[m].Path+files[m].Name+"_big_."+files[m].Ext, os.Getenv("POLONEXPUBPATH")+newpath)
+                    //						DoOsExec("mv", os.Getenv("POLONEXPUBPATH")+files[m].Path+files[m].Name+"_tumb_."+files[m].Ext, os.Getenv("POLONEXPUBPATH")+newpath)
+                    //					} else {
+                    //						DoOsExec("mv", os.Getenv("POLONEXPUBPATH")+files[m].Path+files[m].Name+"."+files[m].Ext, os.Getenv("POLONEXPUBPATH")+newpath)
+                    //					}
 				}
 			}
 		}
@@ -155,7 +155,7 @@ func Start(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error get list of users: ", err)
 	}
 
-	limiter := make(chan int, 2)
+	limiter := make(chan int, 10)
 	for e := range data.Users {
 		limiter <- 1
 		go func(e int) {
