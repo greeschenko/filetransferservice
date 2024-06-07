@@ -195,7 +195,7 @@ func main() {
 	DB.DB().SetMaxIdleConns(5)
 
 	// Set max open connection to 10
-	DB.DB().SetMaxOpenConns(10)
+	DB.DB().SetMaxOpenConns(25)
 
 	http.HandleFunc("/start", Start)
 	http.ListenAndServe(":8000", nil)
