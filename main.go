@@ -1,12 +1,5 @@
 package main
 
-//TODO
-// + change all data to correct in db and reapload all files and repeat tests
-// + copy file to new path with os
-// + add threads
-// - test without copeing on prod
-// - change copy to move
-
 import (
 	"bytes"
 	"encoding/json"
@@ -103,6 +96,8 @@ func (u User) HandleAll() {
 					//fmt.Println("mkdir", "--parrents", "web/uploads2/"+grouplist[e])
 					fmt.Println(">>>>>>", "mv", os.Getenv("POLONEXPUBPATH")+files[m].Path+files[m].Name+"."+files[m].Ext, os.Getenv("POLONEXPUBPATH")+newpath)
                     fmt.Println(u.ID)
+
+                    DoOsExec("ls", "-lah", os.Getenv("POLONEXPUBPATH")+files[m].Path)
 
 					//TODO turn on after testing
                     //					DoOsExec("mkdir", "-p", os.Getenv("POLONEXPUBPATH")+newpath)
