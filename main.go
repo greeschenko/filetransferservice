@@ -86,24 +86,24 @@ func (u User) HandleAll() {
 				if err != nil {
 					fmt.Println("Error get list of files: ", err)
 				}
-			}
-			if len(files) > 0 {
-				fmt.Println("user handle start", u.ID, u.Email)
-				fmt.Println(">>>", e, grouplist[e])
-				for m := range files {
-					newpath := strings.Replace(files[m].Path, "/uploads/", "/uploads2/", -1)
-					//fmt.Println(">>>>>>", files[m].Path, files[m].Name, files[m].Ext)
-					//fmt.Println("mkdir", "--parrents", "web/uploads2/"+grouplist[e])
-					fmt.Println(">>>>>>", "mv", os.Getenv("POLONEXPUBPATH")+files[m].Path+files[m].Name+"."+files[m].Ext, os.Getenv("POLONEXPUBPATH")+newpath)
 
-					//TODO turn on after testing
-					DoOsExec("mkdir", "-p", os.Getenv("POLONEXPUBPATH")+newpath)
+				if len(files) > 0 {
+					fmt.Println("user handle start", u.ID, u.Email)
+					fmt.Println(">>>", e, grouplist[e])
+					for m := range files {
+						newpath := strings.Replace(files[m].Path, "/uploads/", "/uploads2/", -1)
+						//jfmt.Println(">>>>>>", files[m].Path, files[m].Name, files[m].Ext)
+						fmt.Println(">>>>>>", "mv", os.Getenv("POLONEXPUBPATH")+files[m].Path+files[m].Name+"."+files[m].Ext, os.Getenv("POLONEXPUBPATH")+newpath)
 
-					if files[m].Type == 1 {
-						DoOsExec("mv", os.Getenv("POLONEXPUBPATH")+files[m].Path+files[m].Name+"_big_."+files[m].Ext, os.Getenv("POLONEXPUBPATH")+newpath)
-						DoOsExec("mv", os.Getenv("POLONEXPUBPATH")+files[m].Path+files[m].Name+"_tumb_."+files[m].Ext, os.Getenv("POLONEXPUBPATH")+newpath)
-					} else {
-						DoOsExec("mv", os.Getenv("POLONEXPUBPATH")+files[m].Path+files[m].Name+"."+files[m].Ext, os.Getenv("POLONEXPUBPATH")+newpath)
+						//TODO turn on after testing
+						DoOsExec("mkdir", "-p", os.Getenv("POLONEXPUBPATH")+newpath)
+
+						if files[m].Type == 1 {
+							DoOsExec("mv", os.Getenv("POLONEXPUBPATH")+files[m].Path+files[m].Name+"_big_."+files[m].Ext, os.Getenv("POLONEXPUBPATH")+newpath)
+							DoOsExec("mv", os.Getenv("POLONEXPUBPATH")+files[m].Path+files[m].Name+"_tumb_."+files[m].Ext, os.Getenv("POLONEXPUBPATH")+newpath)
+						} else {
+							DoOsExec("mv", os.Getenv("POLONEXPUBPATH")+files[m].Path+files[m].Name+"."+files[m].Ext, os.Getenv("POLONEXPUBPATH")+newpath)
+						}
 					}
 				}
 			}
